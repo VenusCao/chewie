@@ -34,16 +34,17 @@ class PlayerWithControls extends StatelessWidget {
       BuildContext context,
     ) {
       return Stack(
-        children: <Widget>[
+          children: [
           if (chewieController.placeholder != null)
             chewieController.placeholder!,
+
           InteractiveViewer(
             transformationController: chewieController.transformationController,
             maxScale: chewieController.maxScale,
             panEnabled: chewieController.zoomAndPan,
             scaleEnabled: chewieController.zoomAndPan,
             child: 
-            chewieController.aspectRatio??
+            chewieController.aspectRatio!=null??
             Center(
               child: AspectRatio(
                 aspectRatio: chewieController.aspectRatio ??
@@ -54,8 +55,7 @@ class PlayerWithControls extends StatelessWidget {
             CroppedVideo(
             controller: chewieController.videoPlayerController,
             cropAspectRatio: chewieController.aspectRatio,
-          )
-            ,
+          ),
           ),
           if (chewieController.overlay != null) chewieController.overlay!,
           if (Theme.of(context).platform != TargetPlatform.iOS)
@@ -104,6 +104,17 @@ class PlayerWithControls extends StatelessWidget {
       );
     });
   }
+}
+
+
+class CroppedVideo extends StatefulWidget {
+  CroppedVideo({this.controller, this.cropAspectRatio});
+
+  final VideoPlayerController controller;
+  final double cropAspectRatio;
+
+  @override
+  CroppedVideoState createState() => CroppedVideoState();
 }
 
 class CroppedVideoState extends State<CroppedVideo> {
