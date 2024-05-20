@@ -42,13 +42,20 @@ class PlayerWithControls extends StatelessWidget {
             maxScale: chewieController.maxScale,
             panEnabled: chewieController.zoomAndPan,
             scaleEnabled: chewieController.zoomAndPan,
-            child: Center(
+            child: 
+            chewieController.aspectRatio??
+            Center(
               child: AspectRatio(
                 aspectRatio: chewieController.aspectRatio ??
                     chewieController.videoPlayerController.value.aspectRatio,
                 child: VideoPlayer(chewieController.videoPlayerController),
               ),
-            ),
+            ):
+            CroppedVideo(
+            controller: chewieController.videoPlayerController,
+            cropAspectRatio: chewieController.aspectRatio,
+          )
+            ,
           ),
           if (chewieController.overlay != null) chewieController.overlay!,
           if (Theme.of(context).platform != TargetPlatform.iOS)
@@ -96,5 +103,67 @@ class PlayerWithControls extends StatelessWidget {
         ),
       );
     });
+  }
+}
+
+class CroppedVideoState extends State<CroppedVideo> {
+  VideoPlayerController get controller => widget.controller;
+
+  double get cropAspectRatio => widget.cropAspectRatio;
+  bool initialized = false;
+
+  VoidCallback listener;
+
+  @override
+  void initState() {
+    super.initState();
+    _waitForInitialized();
+  }
+
+  @override
+  void didUpdateWidget(CroppedVideo oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != controller) {
+      oldWidget.controller.removeListener(listener);
+      initialized = false;
+      _waitForInitialized();
+    }
+  }
+
+  void _waitForInitialized() {
+    listener = () {
+      if (!mounted) {
+        return;
+      }
+      if (initialized != controller.value.initialized) {
+        initialized = controller.value.initialized;
+        setState(() {});
+      }
+    };
+    controller.addListener(listener);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (initialized) {
+      return Center(
+        child: AspectRatio(
+          aspectRatio: cropAspectRatio ?? controller.value.aspectRatio,
+          child: FittedBox(
+            fit: BoxFit.cover,
+            child: SizedBox(
+              width: controller.value.size?.width ?? 0,
+              height: controller.value.size?.height ?? 0,
+              child: AspectRatio(
+                aspectRatio: controller.value.aspectRatio,
+                child: VideoPlayer(controller),
+              ),
+            ),
+          ),
+        ),
+      );
+    } else {
+      return Container();
+    }
   }
 }
