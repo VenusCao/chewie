@@ -51,7 +51,23 @@ class PlayerWithControls extends StatelessWidget {
                     chewieController.videoPlayerController.value.aspectRatio,
                 child: VideoPlayer(chewieController.videoPlayerController),
               ),
-            ):CroppedVideo(controller: chewieController.videoPlayerController,cropAspectRatio:chewieController.aspectRatio ,)
+            ):
+            Center(
+              child: AspectRatio(
+                aspectRatio: chewieController.aspectRatio!,
+                child: FittedBox(
+                  fit: BoxFit.cover,
+                  child: SizedBox(
+                    width: chewieController.videoPlayerController.value.size?.width ?? 0,
+                    height: chewieController.videoPlayerController.value.size?.height ?? 0,
+                    child: AspectRatio(
+                      aspectRatio: chewieController.videoPlayerController.value.aspectRatio,
+                      child: VideoPlayer(chewieController.videoPlayerController),
+                    ),
+                  ),
+                ),
+              ),
+            )
           ),
           if (chewieController.overlay != null) chewieController.overlay!,
           if (Theme.of(context).platform != TargetPlatform.iOS)
