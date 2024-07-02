@@ -25,7 +25,7 @@ String formatDuration(Duration position,{bool showHours=false}) {
           ? '00'
           : '0$seconds';
 
-  final formattedTime =
+  var formattedTime =
       '${hoursString == '00' ? '' : '$hoursString:'}$minutesString:$secondsString';
   if(showHours){
     formattedTime =
