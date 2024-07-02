@@ -1,4 +1,4 @@
-String formatDuration(Duration position) {
+String formatDuration(Duration position,{bool showHours=false}) {
   final ms = position.inMilliseconds;
 
   int seconds = ms ~/ 1000;
@@ -25,10 +25,11 @@ String formatDuration(Duration position) {
           ? '00'
           : '0$seconds';
 
-  // final formattedTime =
-  //     '${hoursString == '00' ? '' : '$hoursString:'}$minutesString:$secondsString';
   final formattedTime =
-      '$hoursString:$minutesString:$secondsString';
-
+      '${hoursString == '00' ? '' : '$hoursString:'}$minutesString:$secondsString';
+  if(showHours){
+    formattedTime =
+        '$hoursString:$minutesString:$secondsString';
+  }
   return formattedTime;
 }
